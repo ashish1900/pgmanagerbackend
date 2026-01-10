@@ -1,6 +1,7 @@
 package com.ash.main.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.ash.main.config.OtpConfig;
@@ -15,11 +16,37 @@ public class OtpService {
 
     @Autowired
     private OtpConfig otpConfig;
+    
+    // DEMO CONFIG
+    @Value("${demo.login.enabled}")
+    private boolean demoEnabled;
+
+    @Value("${demo.owner.mobile}")
+    private String ownerDemoMobile;
+
+    @Value("${demo.guest.mobile}")
+    private String guestDemoMobile;
+
+    @Value("${demo.otp}")
+    private String demoOtp;
 
     public String sendOtpToPhone(String mobileNumber) {
 
         //  INTERNAL FORMAT (DB / OTP STORAGE)
         mobileNumber = mobileNumber.replace("+91", "");
+    
+        
+     //  DEMO NUMBER → SMS SKIP
+        if (demoEnabled &&
+                (mobileNumber.equals(ownerDemoMobile) ||
+                 mobileNumber.equals(guestDemoMobile))) {
+
+                System.out.println("DEMO LOGIN OTP (OWNER / GUEST)");
+                OtpStorage.saveOtp(mobileNumber, demoOtp);
+                return demoOtp;
+            }
+        
+        
 
         String otp = generateOtp();
 
@@ -49,14 +76,31 @@ public class OtpService {
         return otp;
     }
 
+    
     private String generateOtp() {
         return String.valueOf(100000 + new Random().nextInt(900000));
     }
 
+    
+    
+    
+    
     public boolean validateOtp(String mobileNumber, String inputOtp) {
 
         mobileNumber = mobileNumber.replace("+91", "");
+        
+        
+        //  DEMO OTP VALIDATION
+        if (demoEnabled &&
+                (mobileNumber.equals(ownerDemoMobile) ||
+                 mobileNumber.equals(guestDemoMobile)) &&
+                inputOtp.equals(demoOtp)) {
 
+                System.out.println("DEMO OTP VERIFIED");
+                return true;
+            }
+
+        
         String storedOtp = OtpStorage.getOtp(mobileNumber);
 
         System.out.println("storedOtp " + storedOtp);
