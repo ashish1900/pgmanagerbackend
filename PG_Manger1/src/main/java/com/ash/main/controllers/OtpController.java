@@ -164,6 +164,10 @@ public class OtpController {
 
 	
 	
+	@GetMapping("/health")
+    public String health() {
+        return "OK";
+    }
 	
 	
 	@GetMapping("/stay-request/id-image")
