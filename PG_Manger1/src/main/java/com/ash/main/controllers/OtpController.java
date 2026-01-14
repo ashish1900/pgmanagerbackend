@@ -32,9 +32,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -77,7 +74,6 @@ import com.ash.main.service.RoomAssignmentService;
 import com.ash.main.service.ServiceO;
 import com.ash.main.service.StayRequestService;
 import com.ash.main.util.TimeUtil;
-
 import com.cloudinary.Cloudinary;
 
 import jakarta.servlet.http.HttpServletRequest;
