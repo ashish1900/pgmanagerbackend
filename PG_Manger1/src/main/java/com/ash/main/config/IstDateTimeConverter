@@ -1,0 +1,27 @@
+package com.ash.main.config;
+
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
+
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+@Converter(autoApply = true)
+public class IstDateTimeConverter
+        implements AttributeConverter<LocalDateTime, Timestamp> {
+
+    private static final ZoneId IST = ZoneId.of("Asia/Kolkata");
+
+    @Override
+    public Timestamp convertToDatabaseColumn(LocalDateTime attribute) {
+        if (attribute == null) return null;
+        return Timestamp.from(attribute.atZone(IST).toInstant());
+    }
+
+    @Override
+    public LocalDateTime convertToEntityAttribute(Timestamp dbData) {
+        if (dbData == null) return null;
+        return dbData.toInstant().atZone(IST).toLocalDateTime();
+    }
+}
