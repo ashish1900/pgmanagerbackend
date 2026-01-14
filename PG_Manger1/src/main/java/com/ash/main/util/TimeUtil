@@ -1,0 +1,15 @@
+package com.ash.main.util;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+public final class TimeUtil {
+
+    private static final ZoneId IST = ZoneId.of("Asia/Kolkata");
+
+    private TimeUtil() {}
+
+    public static LocalDateTime now() {
+        return LocalDateTime.now(IST);
+    }
+}
