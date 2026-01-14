@@ -77,6 +77,8 @@ import com.ash.main.service.RoomAssignmentService;
 import com.ash.main.service.ServiceO;
 import com.ash.main.service.StayRequestService;
 import com.cloudinary.Cloudinary;
+import com.ash.main.util.TimeUtil;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -1761,7 +1763,7 @@ public class OtpController {
  	        txn.setPaymentType(paymentType);
  	        txn.setAmount(amount);
  	        txn.setReceiptImage(publicId); 
- 	        txn.setPaymentDate(LocalDateTime.now());
+ 	        txn.setPaymentDate(TimeUtil.now());
  	        txn.setStatus("PENDING");
 
  	        paymentRepo.save(txn);
