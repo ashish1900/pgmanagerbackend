@@ -172,41 +172,19 @@ public class OtpController {
 	
 	
 	@GetMapping("/stay-request/id-image")
-	public ResponseEntity<?> getIdImage(
-	        @RequestParam Long requestId,
-	        @RequestParam String side,
-	        Authentication authentication
-	) {
-
+	public ResponseEntity<?> getIdImage( @RequestParam Long requestId, @RequestParam String side, Authentication authentication){
 	    if (authentication == null) {
 	        return ResponseEntity.status(401).build();
 	    }
-
 	    String loggedMobile = authentication.getName();
-
-	    StayRequestEntity request =
-	            stayRequestRepo.findById(requestId)
-	                    .orElseThrow(() -> new RuntimeException("Request not found"));
-
-	    boolean isGuest =
-	            request.getGuest().getMoNumber().equals(loggedMobile);
-
-	    boolean isOwner =
-	            request.getOwner().getMoNumber().equals(loggedMobile);
-
+	    StayRequestEntity request = stayRequestRepo.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
+	    boolean isGuest = request.getGuest().getMoNumber().equals(loggedMobile);
+	    boolean isOwner = request.getOwner().getMoNumber().equals(loggedMobile);
 	    if (!isGuest && !isOwner) {
-	        return ResponseEntity.status(403)
-	                .body(Map.of("message", "Not allowed"));
+	        return ResponseEntity.status(403).body(Map.of("message", "Not allowed"));
 	    }
-
-	    String publicId =
-	            "front".equalsIgnoreCase(side)
-	                    ? request.getIdFront()
-	                    : request.getIdBack();
-
-	    String signedUrl =
-	            cloudinaryService.generateAuthenticatedUrl(publicId);
-
+	    String publicId = "front".equalsIgnoreCase(side) ? request.getIdFront() : request.getIdBack();
+	    String signedUrl = cloudinaryService.generateAuthenticatedUrl(publicId);
 	    return ResponseEntity.ok(Map.of("url", signedUrl));
 	}
 
@@ -215,32 +193,18 @@ public class OtpController {
 	
 	
 	@PostMapping("/upload-temp-image")
-	public ResponseEntity<?> uploadTempImage(
-	        @RequestParam("file") MultipartFile file) {
-
-	    //  unique name ONLY
+	public ResponseEntity<?> uploadTempImage(@RequestParam("file") MultipartFile file) {
 	    String publicId = "temp_" + UUID.randomUUID();
-
-	    //  folder separated
 	    String folder = "pg-manager/temp";
-
-	    // upload → returns ONLY public_id
-	    String imagePublicId =
-	            cloudinaryService.uploadImage(file, folder, publicId);
-
-	    //  auto delete after 5 minutes (OTP not verified case)
+	    String imagePublicId = cloudinaryService.uploadImage(file, folder, publicId);
 	    Executors.newSingleThreadScheduledExecutor().schedule(() -> {
 	        try {
-	            //  delete needs folder + publicId
-	            cloudinaryService.deleteImage(
-	                    folder + "/" + imagePublicId
+	            cloudinaryService.deleteImage(folder + "/" + imagePublicId
 	            );
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }
 	    }, 5, TimeUnit.MINUTES);
-
-	    
 	    return ResponseEntity.ok(
 	            Map.of("imageName", imagePublicId)
 	    );
