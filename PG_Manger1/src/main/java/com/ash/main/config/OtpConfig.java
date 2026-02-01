@@ -24,11 +24,11 @@ public class OtpConfig {
 	public void initTwilio() {
 
 	    if (accountSid == null || authToken == null) {
-	        throw new IllegalStateException("❌ Twilio credentials missing");
+	        throw new IllegalStateException(" Twilio credentials missing");
 	    }
 
 	    Twilio.init(accountSid, authToken);
-	    System.out.println("✅ Twilio initialized");
+	    System.out.println(" Twilio initialized");
 	}
 
 	
